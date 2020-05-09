@@ -15,32 +15,22 @@ AFRAME.registerComponent('intersect-color-change', {
       var data = this.data;
   
       el.addEventListener('mousedown', function (evt) {
-        // el.setAttribute('material', 'color', '#EF2D5E');
-        // console.log('I was clicked at: ', evt.detail.intersection.point);
-        // const { x, y ,z } = evt.detail.intersection.point;
-        // Object { x: -3.3931509824845336, y: 6.604323059793826, z: -8.25 }
-        // START PAINTING ATTEMPT
-        // box = document.createElement('a-entity');
-        // box.setAttribute('mixin', 'paint');
-        // // box.setAttribute('material', 'color', '#fcf003')
-        // box.setAttribute('position', {x: x, y: y, z: 1.7});
-        // document.getElementById('stage').appendChild(box);
         data.drawing = true;
         document.getElementById('leftHand').components.haptics.pulse(0.5, 200);
       });
   
       el.addEventListener('mouseup', function (evt) {
-        el.setAttribute('material', 'color', self.isMouseEnter ? '#24CAFF' : initialColor);
+        // el.setAttribute('material', 'color', self.isMouseEnter ? '#24CAFF' : initialColor);
         data.drawing = false;
       });
   
       el.addEventListener('mouseenter', function () {
-        el.setAttribute('material', 'color', '#24CAFF');
+        // el.setAttribute('material', 'color', '#24CAFF');
         self.isMouseEnter = true;
       });
   
       el.addEventListener('mouseleave', function () {
-        el.setAttribute('material', 'color', initialColor);
+        // el.setAttribute('material', 'color', initialColor);
         self.isMouseEnter = false;
       });
 
@@ -57,17 +47,23 @@ AFRAME.registerComponent('intersect-color-change', {
     
         let intersection = this.raycaster.components.raycaster.getIntersection(this.el);
         if (!intersection) { return; }
-        // console.log(intersection.point);
         if (this.data.drawing) {
             // document.getElementById('leftHand').components.haptics.pulse();
             const { x, y ,z } = intersection.point;
             // Object { x: -3.3931509824845336, y: 6.604323059793826, z: -8.25 }
             // START PAINTING ATTEMPT
-            box = document.createElement('a-entity');
-            box.setAttribute('mixin', 'paint');
-            // box.setAttribute('material', 'color', '#fcf003')
-            box.setAttribute('position', {x: x, y: y, z: 1.7});
-            document.getElementById('stage').appendChild(box);
+            // Local paint
+            local_circle = document.createElement('a-entity');
+            local_circle.setAttribute('mixin', 'paint');
+            local_circle.setAttribute('material', 'color', '#fcf003');
+            local_circle.setAttribute('position', {x: x, y: y, z: 1.7});
+            document.getElementById('stage').appendChild(local_circle);
+            // Networked send
+            network_circle = document.createElement('a-entity');
+            network_circle.setAttribute('networked', 'template:#paint-template;');
+            network_circle.setAttribute('material', 'color', '#fcf003');
+            network_circle.setAttribute('position', {x: x, y: y, z: -8.4});
+            document.getElementById('stage').appendChild(network_circle);
         }
       }
   });

@@ -1,0 +1,9 @@
+{
+    "$schema": "http://json.schemastore.org/vsls",
+    "gitignore":"none",
+    "excludeFiles":[
+        "node_modules/",
+        "node_modules",
+        "./networked-server/node_modules"
+    ]
+}

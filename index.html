@@ -14,6 +14,15 @@
     <script src="components/intersect-color-change.js"></script>
     <script src="https://unpkg.com/aframe-teleport-controls@0.2.x/dist/aframe-teleport-controls.min.js"></script>
     <script src="https://unpkg.com/aframe-haptics-component/dist/aframe-haptics-component.min.js"></script>
+
+    <!-- Networking -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.slim.js"></script>
+    <!-- <script src="/build.js"></script> -->
+    <script>window.NAF || document.write('<script src="https://unpkg.com/networked-aframe/dist/networked-aframe.min.js">\x3C/script>')</script>
+
+    <script src="https://unpkg.com/aframe-randomizer-components@^3.0.1/dist/aframe-randomizer-components.min.js"></script>
+    <script src="https://unpkg.com/aframe-particle-system-component@1.0.5/dist/aframe-particle-system-component.min.js"></script>
+    <script src="components/spawn-in-circle.component.js"></script>
   </head>
   <body>
     <script>
@@ -42,48 +51,102 @@
       });
     </script>
 
-<a-scene background="color: #212" antialias="true">
+<a-scene 
+  background="color: #212"
+  antialias="true" 
+  networked-scene="
+    room: handcontrollers;
+    debug: true;
+  "
+>
+    <a-assets>
+
+      <img id="grid" src="https://img.gs/bbdkhfbzkk/stretch/https://i.imgur.com/25P1geh.png" crossorigin="anonymous">
+      <img id="sky" src="http://i.imgur.com/WqlqEkq.jpg" crossorigin="anonymous" />
+
+      <!-- Templates -->
+
+      <!-- Player -->
+      <template id="player-template">
+        <a-entity></a-entity>
+      </template>
+
+      <!-- Head -->
+      <template id="head-template">
+        <a-entity class="avatar">
+          <a-sphere class="head"
+            color="#ffffff"
+            scale="0.45 0.5 0.4"
+          ></a-sphere>
+          <a-entity class="face"
+            position="0 0.05 0"
+          >
+            <a-sphere class="eye"
+              color="#efefef"
+              position="0.16 0.1 -0.35"
+              scale="0.12 0.12 0.12"
+            >
+              <a-sphere class="pupil"
+                color="#000"
+                position="0 0 -1"
+                scale="0.2 0.2 0.2"
+              ></a-sphere>
+            </a-sphere>
+            <a-sphere class="eye"
+              color="#efefef"
+              position="-0.16 0.1 -0.35"
+              scale="0.12 0.12 0.12"
+            >
+              <a-sphere class="pupil"
+                color="#000"
+                position="0 0 -1"
+                scale="0.2 0.2 0.2"
+              ></a-sphere>
+            </a-sphere>
+          </a-entity>
+        </a-entity>
+      </template>
+
+      <!-- Hand -->
+      <template id="hand-template">
+        <a-entity>
+          <a-box scale="0.1 0.1 0.1"></a-box>
+        </a-entity>
+      </template>
+      <!-- /Templates -->
+    </a-assets>
 
       <!-- Player object-->
-      <a-entity id="cameraRig">
-        <!-- camera -->
-        <a-entity
-          id="head"
-          camera
-          wasd-controls
-          look-controls
-          position="0 3.2 0"
-        ></a-entity>
-        <!-- hand controls -->
-        <!-- teleport-controls="cameraRig: #cameraRig; teleportOrigin: #head;"-->
+      <a-entity id="player" networked="template:#player-template;attachTemplateToLocal:false;" spawn-in-circle="radius:3" wasd-controls>
+        <a-entity camera position="0 1.6 0" look-controls networked="template:#head-template;attachTemplateToLocal:false;">
+            <a-sphere class="head"
+              random-color
+              visible="false"
+            ></a-sphere>
+        </a-entity>
+
         <a-entity
           id="leftHand"
           laser-controls="hand: left"
-          teleport-controls="type: parabolic; collisionEntities: #ground;"
           haptics
           raycaster="objects: [mixin='chalkboard']"
+          networked="template:#hand-template;"
         ></a-entity>
-        <!-- <a-entity id="teleHand" laser-controls="hand: left" teleport-controls="type: parabolic;"></a-entity> -->
         <a-entity
           id="rightHand"
           line="color: #118A7E"
+          networked="template:#hand-template;"
+          teleport-controls="type: parabolic; collisionEntities: #ground;"
+          vive-controls="hand: right"
         ></a-entity>
       </a-entity>
-      
 
       <!-- Others stuff -->
       <!-- <a-entity position="0 3.2 0" camera look-controls wasd-controls></a-entity> -->
       <a-light position="0 0.5 1" intensity="0.75"></a-light>
+      
       <a-entity position="0 0 -10">
-        <a-mixin
-          id="chalkboard"
-          geometry="primitive: box"
-          material="color: #FAFAFA"
-          rotation="0 0 0"
-          scale="15 10 0.1"
-          intersect-color-change
-          shadow="cast: true; receive: false"
-        ></a-mixin>
+        <!-- Paint -->
         <a-mixin
             id="paint"
             geometry="primitive: circle"
@@ -92,8 +155,34 @@
             scale="0.3 0.3 0.3"
             radius="1"
         ></a-mixin>
+        <template id="paint-template">
+          <a-circle class="paint-circle" scale="0.3 0.3 0.3" radius="1" rotation="0 0 0" material="color: #fcf003"></a-circle>
+        </template>
+        <!-- Chalkboard -->
+        <a-mixin
+          id="chalkboard"
+          geometry="primitive: box"
+          material="color: #000"
+          rotation="0 0 0"
+          scale="15 10 0.1"
+          intersect-color-change
+          shadow="cast: true; receive: false"
+        ></a-mixin>
         <a-entity id="stage" stage></a-entity>
-        <a-circle
+
+        <!-- Environment -->
+        <a-entity
+          position="0 0 0"
+          id="ground"
+          geometry="primitive: plane; width: 10000; height: 10000;" rotation="-90 0 0"
+          material="src: #grid; repeat: 10000 10000; transparent: true; metalness:0.6; roughness: 0.4; sphericalEnvMap: #sky;">
+        </a-entity>
+
+        <a-entity light="color: #ccccff; intensity: 1; type: ambient;" visible=""></a-entity>
+        <a-entity light="color: #ffaaff; intensity: 1.5" position="5 5 5"></a-entity>
+
+        <a-sky src="#sky" rotation="0 -90 0"></a-sky>
+        <!-- <a-circle
           id="ground"
           rotation="-90 0 0"
           radius="20"
@@ -107,8 +196,56 @@
           position="0 10 -30"
           intensity="0.85"
           shadow-if-mobile
-        ></a-light>
+        ></a-light> -->
       </a-entity>
     </a-scene>
+
+    <script>
+      // Define custom schema for syncing avatar color, set by random-color
+      NAF.schemas.add({
+        template: '#head-template',
+        components: [
+          'position',
+          'rotation',
+          {
+            selector: '.head',
+            component: 'material'
+          }
+        ]
+      });
+
+      NAF.schemas.add({
+        template: '#player-template',
+        components: [
+          'position',
+          'rotation'
+        ]
+      });
+
+      NAF.schemas.add({
+        template: '#hand-template',
+        components: [
+          'position',
+          'rotation'
+        ]
+      });
+
+      NAF.schemas.add({
+        template: '#paint-template',
+        components: [
+          'position',
+          'rotation',
+          {
+            selector: '.paint-circle',
+            component: 'material'
+          }
+        ]
+      });
+
+      // Called by Networked-Aframe when connected to server
+      function onConnect () {
+        console.log("onConnect");
+      }
+    </script>
   </body>
 </html>
