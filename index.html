@@ -1,15 +1,9 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta
-      http-equiv="origin-trial"
-      data-feature="WebVR (For Chrome M59+)"
-      data-expires="2017-07-28"
-      content="ArFv1ZeTwzkhjNE00uAE+XtiQB41fwqG/TqlFMLrepd9sforQSvQE/tgfIbUMYNuNre4QR1k4/z8xp2mV3dbhwwAAABeeyJvcmlnaW4iOiJodHRwczovL2FmcmFtZS5pbzo0NDMiLCJmZWF0dXJlIjoiV2ViVlIxLjEiLCJleHBpcnkiOjE1MDEyMTcwMDIsImlzU3ViZG9tYWluIjp0cnVlfQ=="
-    />
     <meta charset="utf-8" />
-    <title>Laser Controls</title>
-    <meta name="description" content="Laser Controls - A-Frame" />
+    <title>ChalkyVR</title>
+    <meta name="description" content="ChalkyVR" />
     <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
     <script src="components/intersect-color-change.js"></script>
     <script src="https://unpkg.com/aframe-teleport-controls@0.2.x/dist/aframe-teleport-controls.min.js"></script>
@@ -49,6 +43,15 @@
           }
         },
       });
+
+      AFRAME.registerComponent("teleporting", {
+        init: function() {
+          var el = this.el;
+          el.addEventListener('teleported', function (evt) {
+            console.log('teleport: ', evt)
+          });
+        }
+      });
     </script>
 
 <a-scene 
@@ -63,6 +66,10 @@
 
       <img id="grid" src="https://img.gs/bbdkhfbzkk/stretch/https://i.imgur.com/25P1geh.png" crossorigin="anonymous">
       <img id="sky" src="http://i.imgur.com/WqlqEkq.jpg" crossorigin="anonymous" />
+      <a-asset-item id="robo_char-obj" src="./robo_char.obj"></a-asset-item>
+      <a-asset-item id="robo_char-mtl" src="./robo_char.mtl"></a-asset-item>
+      <a-asset-item id="robo_hand-obj" src="./robo_hand.obj"></a-asset-item>
+      <a-asset-item id="robo_hand-mtl" src="./robo_hand.mtl"></a-asset-item>
 
       <!-- Templates -->
 
@@ -73,7 +80,7 @@
 
       <!-- Head -->
       <template id="head-template">
-        <a-entity class="avatar">
+        <!-- <a-entity class="avatar">
           <a-sphere class="head"
             color="#ffffff"
             scale="0.45 0.5 0.4"
@@ -104,30 +111,42 @@
               ></a-sphere>
             </a-sphere>
           </a-entity>
+        </a-entity> -->
+        <a-entity class="avatar">
+          <a-entity scale="1.2 1.2 1.2" rotation="0 180 0" position="0.7 -1.2 -0.7" obj-model="obj: #robo_char-obj; mtl: #robo_char-mtl" modify-materials></a-entity>
         </a-entity>
       </template>
 
       <!-- Hand -->
       <template id="hand-template">
         <a-entity>
-          <a-box scale="0.1 0.1 0.1"></a-box>
+          <a-box rotation="90 0 0" scale="0.15 0.3 0.15" position="0 0 0" color="#0066CC"></a-box>
+          <a-box rotation="90 0 0" scale="0.15 0.05 0.15" position="0 0 -0.175" color="#EE0000"></a-box>
+          <!-- <a-entity scale="0.5 0.5 0.5" position="0 0 0" obj-model="obj: #robo_hand-obj; mtl: #robo_hand-mtl" modify-materials></a-entity> -->
         </a-entity>
       </template>
       <!-- /Templates -->
     </a-assets>
 
       <!-- Player object-->
-      <a-entity id="player" networked="template:#player-template;attachTemplateToLocal:false;" spawn-in-circle="radius:3" wasd-controls>
-        <a-entity camera position="0 1.6 0" look-controls networked="template:#head-template;attachTemplateToLocal:false;">
-            <a-sphere class="head"
+      <a-entity id="player" networked="template:#player-template;attachTemplateToLocal:false;" spawn-in-circle="radius:3" teleporting>
+        <a-entity id="testCamera" camera position="0 1.6 0" look-controls wasd-controls networked="template:#head-template;attachTemplateToLocal:false;">
+            <a-sphere id='head' class="head"
               random-color
               visible="false"
             ></a-sphere>
+            <!-- <a-entity
+                cursor="fuse: true; fuseTimeout: 500"
+                position="0 0 -1"
+                geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+                material="color: black; shader: flat"
+            >
+          </a-entity> -->
         </a-entity>
 
         <a-entity
           id="leftHand"
-          laser-controls="hand: left"
+          laser-controls="hand: left;"
           haptics
           raycaster="objects: [mixin='chalkboard']"
           networked="template:#hand-template;"
@@ -136,7 +155,7 @@
           id="rightHand"
           line="color: #118A7E"
           networked="template:#hand-template;"
-          teleport-controls="type: parabolic; collisionEntities: #ground;"
+          teleport-controls="type: parabolic; cameraRig: #player; teleportOrigin: #player"
           vive-controls="hand: right"
         ></a-entity>
       </a-entity>
