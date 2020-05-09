@@ -1,0 +1,12 @@
+{
+  "name": "chalky-server",
+  "version": "1.0.0",
+  "description": "My first multi-user virtual reality",
+  "scripts": {
+    "start": "node ./server/index.js"
+  },
+  "author": "Connor Macdougall",
+  "dependencies": {
+    "networked-aframe": "^0.7.0"
+  }
+}
