@@ -5,7 +5,8 @@
  */
 AFRAME.registerComponent('chalkboard', {
     schema: {
-        drawing: {type: 'boolean', default: false}
+        drawing: {type: 'boolean', default: false},
+        canvas_interaction: {type: 'array', default: []}
     },
     init: function () {
       var el = this.el;
@@ -17,15 +18,6 @@ AFRAME.registerComponent('chalkboard', {
       this.ctx = this.canvas.getContext('2d');
 
       this.draw = function(x,y) {
-        this.ctx.beginPath();
-        // this.ctx.rect(20, 20, 150, 100);
-        // this.ctx.fillStyle = "red";
-        // this.ctx.fill();
-        this.ctx.fillStyle = "black";
-        // this.ctx.font = "30px Arial";
-        // this.ctx.fillText("Hello World", 600, 600);
-
-
         // y - 0 to 10
         // x - -10 to 10
         // Canvas 0 to 512
@@ -34,8 +26,7 @@ AFRAME.registerComponent('chalkboard', {
         // -10 to 0 = 0 to 512 X
         // 0 to 10 = 512 to 1024
         // 10 to 0 = 0 to 512
-    
-        draw_x = x
+  
         draw_y = Math.abs(y - 10) * 51.2
         if (x > 0) {
           draw_x = (x + 10) * 51.2
@@ -43,10 +34,15 @@ AFRAME.registerComponent('chalkboard', {
         if (x < 0) {
           draw_x = Math.abs(x + 10) * 51.2
         }
-        console.log('x: ', x)
-        console.log('y: ', y)
-        console.log('drawing to canvas x: ', draw_x)
-        console.log('drawing to canvas y: ', draw_y)
+        this.data.canvas_interaction.push(
+          {'x': draw_x, 'y': draw_y, 'stroke': {'color': 'black'}}
+        )
+        console.log(this)
+        // console.log('x: ', x)
+        // console.log('y: ', y)
+        // console.log('drawing to canvas x: ', draw_x)
+        // console.log('drawing to canvas y: ', draw_y)
+        this.ctx.beginPath();
         this.ctx.arc(draw_x, draw_y, 7, 0, 2 * Math.PI);
         this.ctx.fill();
       }
