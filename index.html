@@ -139,7 +139,7 @@
       <!-- /Templates -->
 
       <!-- Chalkboard texture -->
-      <canvas id="chalkboard-canvas" crossorigin="anonymous" width="1920" height="1024"></canvas>
+      <canvas id="chalkboard-canvas" crossorigin="anonymous" width="1024" height="512"></canvas>
     </a-assets>
 
       <!-- Player object-->
@@ -194,15 +194,24 @@
         <!-- Chalkboard -->
         <a-mixin
           id="chalkboard"
-          geometry="primitive: plane"
-          material="src: #chalkboard-canvas"
+          geometry="primitive: plane; height: 10; width: 20"
+          material="shader: flat; src: #chalkboard-canvas"
           rotation="0 0 0"
-          scale="15 10 0.1"
           chalkboard
           canvas-updater
-          draw-canvas='chalkboard-canvas'
         ></a-mixin>
+        <!-- scale="15 10 0.1" -->
         <a-entity id="stage" stage></a-entity>
+        <!-- <a-entity 
+          id="chalkboard"
+          geometry="primitive: plane; height: 10; width: 20"
+          material="shader: flat; src: #chalkboard-canvas"
+          position="0 5 0"
+          scale="1 1 0.1"
+          chalkboard
+          canvas-updater
+        >
+        </a-entity> -->
 
         <!-- Environment -->
         <a-entity

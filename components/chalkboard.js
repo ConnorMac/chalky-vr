@@ -16,18 +16,53 @@ AFRAME.registerComponent('chalkboard', {
       this.canvas = document.getElementById("chalkboard-canvas");
       this.ctx = this.canvas.getContext('2d');
 
-      this.draw = function() {
-        console.log('drawing to canvas')
+      this.draw = function(x,y) {
         this.ctx.beginPath();
-        this.ctx.rect(20, 20, 150, 100);
-        this.ctx.fillStyle = "red";
+        // this.ctx.rect(20, 20, 150, 100);
+        // this.ctx.fillStyle = "red";
+        // this.ctx.fill();
+        this.ctx.fillStyle = "black";
+        // this.ctx.font = "30px Arial";
+        // this.ctx.fillText("Hello World", 600, 600);
+
+
+        // y - 0 to 10
+        // x - -10 to 10
+        // Canvas 0 to 512
+        // Canvas 0 to 1024
+
+        // -10 to 0 = 0 to 512 X
+        // 0 to 10 = 512 to 1024
+        // 10 to 0 = 0 to 512
+    
+        draw_x = x
+        draw_y = Math.abs(y - 10) * 51.2
+        if (x > 0) {
+          draw_x = (x + 10) * 51.2
+        }
+        if (x < 0) {
+          draw_x = Math.abs(x + 10) * 51.2
+        }
+        console.log('x: ', x)
+        console.log('y: ', y)
+        console.log('drawing to canvas x: ', draw_x)
+        console.log('drawing to canvas y: ', draw_y)
+        this.ctx.arc(draw_x, draw_y, 7, 0, 2 * Math.PI);
+        this.ctx.fill();
+      }
+
+      this.test_draw = function(x,y) {
+        console.log('drawing to canvas x', x)
+        console.log('drawing to canvas y', y)
+        this.ctx.beginPath();
+        this.ctx.rect(0, 0, 1024, 512);
+        this.ctx.fillStyle = "white";
         this.ctx.fill();
         this.ctx.fillStyle = "black";
         this.ctx.font = "30px Arial";
-        this.ctx.fillText("Hello World", 600, 600);
-        console.log("this is the ctx", this.ctx)
+        this.ctx.fillText("Hello! Draw over me.", 350, 300);
       }
-      // this.draw()
+      this.test_draw()
   
       el.addEventListener('mousedown', function (evt) {
         data.drawing = true;
@@ -74,7 +109,7 @@ AFRAME.registerComponent('chalkboard', {
             // local_circle.setAttribute('position', {x: x, y: y, z: 1.7});
             // document.getElementById('stage').appendChild(local_circle);
             // Local paint - canvas
-            this.draw();
+            this.draw(x,y);
             // Networked send
             // network_circle = document.createElement('a-entity');
             // network_circle.setAttribute('networked', 'template:#paint-template;');
