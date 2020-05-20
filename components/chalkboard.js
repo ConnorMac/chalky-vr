@@ -3,7 +3,7 @@
 /**
  * Change color if entity when intersected by raycaster.
  */
-AFRAME.registerComponent('intersect-color-change', {
+AFRAME.registerComponent('chalkboard', {
     schema: {
         drawing: {type: 'boolean', default: false}
     },
@@ -13,10 +13,25 @@ AFRAME.registerComponent('intersect-color-change', {
       var initialColor = material.color;
       var self = this;
       var data = this.data;
+      this.canvas = document.getElementById("chalkboard-canvas");
+      this.ctx = this.canvas.getContext('2d');
+
+      this.draw = function() {
+        console.log('drawing to canvas')
+        this.ctx.beginPath();
+        this.ctx.rect(20, 20, 150, 100);
+        this.ctx.fillStyle = "red";
+        this.ctx.fill();
+        this.ctx.fillStyle = "black";
+        this.ctx.font = "30px Arial";
+        this.ctx.fillText("Hello World", 600, 600);
+        console.log("this is the ctx", this.ctx)
+      }
+      // this.draw()
   
       el.addEventListener('mousedown', function (evt) {
         data.drawing = true;
-        document.getElementById('leftHand').components.haptics.pulse(0.5, 200);
+        // document.getElementById('leftHand').components.haptics.pulse(0.5, 200);
       });
   
       el.addEventListener('mouseup', function (evt) {
@@ -42,7 +57,7 @@ AFRAME.registerComponent('intersect-color-change', {
       });
     },
 
-    tick: function () {
+    tick: function () {      
         if (!this.raycaster) { return; }  // Not intersecting.
     
         let intersection = this.raycaster.components.raycaster.getIntersection(this.el);
@@ -52,18 +67,20 @@ AFRAME.registerComponent('intersect-color-change', {
             const { x, y ,z } = intersection.point;
             // Object { x: -3.3931509824845336, y: 6.604323059793826, z: -8.25 }
             // START PAINTING ATTEMPT
-            // Local paint
-            local_circle = document.createElement('a-entity');
-            local_circle.setAttribute('mixin', 'paint');
-            local_circle.setAttribute('material', 'color', '#fcf003');
-            local_circle.setAttribute('position', {x: x, y: y, z: 1.7});
-            document.getElementById('stage').appendChild(local_circle);
+            // Local paint - non canvas
+            // local_circle = document.createElement('a-entity');
+            // local_circle.setAttribute('mixin', 'paint');
+            // local_circle.setAttribute('material', 'color', '#fcf003');
+            // local_circle.setAttribute('position', {x: x, y: y, z: 1.7});
+            // document.getElementById('stage').appendChild(local_circle);
+            // Local paint - canvas
+            this.draw();
             // Networked send
-            network_circle = document.createElement('a-entity');
-            network_circle.setAttribute('networked', 'template:#paint-template;');
-            network_circle.setAttribute('material', 'color', '#fcf003');
-            network_circle.setAttribute('position', {x: x, y: y, z: -8.4});
-            document.getElementById('stage').appendChild(network_circle);
+            // network_circle = document.createElement('a-entity');
+            // network_circle.setAttribute('networked', 'template:#paint-template;');
+            // network_circle.setAttribute('material', 'color', '#fcf003');
+            // network_circle.setAttribute('position', {x: x, y: y, z: -8.4});
+            // document.getElementById('stage').appendChild(network_circle);
         }
       }
   });
