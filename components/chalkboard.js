@@ -116,21 +116,7 @@ AFRAME.registerComponent('chalkboard', {
             // document.getElementById('leftHand').components.haptics.pulse();
             const { x, y ,z } = intersection.point;
             // Object { x: -3.3931509824845336, y: 6.604323059793826, z: -8.25 }
-            // START PAINTING ATTEMPT
-            // Local paint - non canvas
-            // local_circle = document.createElement('a-entity');
-            // local_circle.setAttribute('mixin', 'paint');
-            // local_circle.setAttribute('material', 'color', '#fcf003');
-            // local_circle.setAttribute('position', {x: x, y: y, z: 1.7});
-            // document.getElementById('stage').appendChild(local_circle);
-            // Local paint - canvas
             this.store_draw(x,y);
-            // Networked send
-            // network_circle = document.createElement('a-entity');
-            // network_circle.setAttribute('networked', 'template:#paint-template;');
-            // network_circle.setAttribute('material', 'color', '#fcf003');
-            // network_circle.setAttribute('position', {x: x, y: y, z: -8.4});
-            // document.getElementById('stage').appendChild(network_circle);
         }
       }
   });
