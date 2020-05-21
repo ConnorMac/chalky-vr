@@ -24,13 +24,22 @@
       // Create boxes.
       AFRAME.registerComponent("stage", {
         init: function () {
-            var box;
-            var el = this.el;
-            box = document.createElement("a-entity");
-            box.setAttribute("mixin", "chalkboard");
-            box.setAttribute("position", { x: 0, y: 5, z: 1.5 });
-            el.appendChild(box);
-            console.log('drew the stage')
+            // if(!document.getElementById('chalkbaord')) {
+            //   console.log("no chalkboard")
+            //   var chalkboard;
+            //   var el = this.el;
+            //   chalkboard = document.createElement("a-entity");
+            //   chalkboard.setAttribute('networked', 'template:#chalkboard-template;');
+            //   chalkboard.setAttribute("id", "chalkboard");
+            //   chalkboard.setAttribute("position", { x: 0, y: 5, z: 1.5 });
+            //   el.appendChild(chalkboard);
+            // }
+
+            // network_circle = document.createElement('a-entity');
+            // network_circle.setAttribute('networked', 'template:#paint-template;');
+            // network_circle.setAttribute('material', 'color', '#fcf003');
+            // network_circle.setAttribute('position', {x: x, y: y, z: -8.4});
+            // document.getElementById('stage').appendChild(network_circle);
         },
       });
 
@@ -162,7 +171,7 @@
           id="leftHand"
           laser-controls="hand: left;"
           haptics
-          raycaster="objects: [mixin='chalkboard']"
+          raycaster="objects: #chalkboard"
           networked="template:#hand-template;"
         ></a-entity>
         <a-entity
@@ -192,26 +201,40 @@
           <a-circle class="paint-circle" scale="0.3 0.3 0.3" radius="1" rotation="0 0 0" material="color: #fcf003"></a-circle>
         </template>
         <!-- Chalkboard -->
-        <a-mixin
+        <!-- <a-mixin
           id="chalkboard"
           geometry="primitive: plane; height: 10; width: 20"
           material="shader: flat; src: #chalkboard-canvas"
           rotation="0 0 0"
           chalkboard
           canvas-updater
-        ></a-mixin>
+        ></a-mixin> -->
         <!-- scale="15 10 0.1" -->
-        <a-entity id="stage" stage></a-entity>
-        <!-- <a-entity 
-          id="chalkboard"
-          geometry="primitive: plane; height: 10; width: 20"
-          material="shader: flat; src: #chalkboard-canvas"
-          position="0 5 0"
-          scale="1 1 0.1"
-          chalkboard
-          canvas-updater
-        >
-        </a-entity> -->
+        <a-entity id="stage" stage>
+          <!-- <template id="chalkboard-template">
+            <a-entity 
+              geometry="primitive: plane; height: 10; width: 20"
+              material="shader: flat; src: #chalkboard-canvas"
+              position="0 5 1.5"
+              chalkboard
+              canvas-updater
+            >
+            </a-entity>
+          </template> -->
+          <!-- <a-entity 
+              networked="template:#chalkboard-template;attachTemplateToLocal:false"
+          >
+          </a-entity> -->
+          <a-entity 
+            id="chalkboard"
+            geometry="primitive: plane; height: 10; width: 20"
+            material="shader: flat; src: #chalkboard-canvas"
+            position="0 5 1.5"
+            chalkboard
+            canvas-updater
+          >
+        </a-entity>
+        </a-entity>
 
         <!-- Environment -->
         <a-entity
@@ -284,6 +307,18 @@
           }
         ]
       });
+
+      // NAF.schemas.add({
+      //   template: '#chalkboard-template',
+      //   components: [
+      //     'position',
+      //     'rotation',
+      //     {
+      //       selector: '#chalkboard',
+      //       component: 'data'
+      //     }
+      //   ]
+      // });
 
       // Called by Networked-Aframe when connected to server
       function onConnect () {

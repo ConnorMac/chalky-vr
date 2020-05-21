@@ -17,7 +17,10 @@ AFRAME.registerComponent('chalkboard', {
       this.canvas = document.getElementById("chalkboard-canvas");
       this.ctx = this.canvas.getContext('2d');
 
-      this.draw = function(x,y) {
+      // Networked event listener for external draw events
+      NAF.connection.subscribeToDataChannel('canvas_draw', (event, type, data) => {if(data) {this.networked_draw(data);}})
+
+      this.store_draw = function(x,y) {
         // y - 0 to 10
         // x - -10 to 10
         // Canvas 0 to 512
@@ -37,19 +40,27 @@ AFRAME.registerComponent('chalkboard', {
         this.data.canvas_interaction.push(
           {'x': draw_x, 'y': draw_y, 'stroke': {'color': 'black'}}
         )
-        console.log(this)
-        // console.log('x: ', x)
-        // console.log('y: ', y)
-        // console.log('drawing to canvas x: ', draw_x)
-        // console.log('drawing to canvas y: ', draw_y)
-        this.ctx.beginPath();
-        this.ctx.arc(draw_x, draw_y, 7, 0, 2 * Math.PI);
-        this.ctx.fill();
+        this.el.emit('canvas_draw', {'x': draw_x, 'y': draw_y, 'stroke': {'color': 'black'}}, false);
       }
 
-      this.test_draw = function(x,y) {
-        console.log('drawing to canvas x', x)
-        console.log('drawing to canvas y', y)
+      this.networked_draw = function(draw_array) {
+        this.data.canvas_interaction.push(
+          draw_array[0]
+        )
+        this.draw(draw_array)
+      }
+
+      this.draw = function(draw_array) {
+        draw_array.forEach(
+          element => {
+            this.ctx.beginPath();
+            this.ctx.arc(element.x, element.y, 7, 0, 2 * Math.PI);
+            this.ctx.fill();
+          }
+        );
+      }
+
+      this.init_draw = function(x,y) {
         this.ctx.beginPath();
         this.ctx.rect(0, 0, 1024, 512);
         this.ctx.fillStyle = "white";
@@ -58,7 +69,11 @@ AFRAME.registerComponent('chalkboard', {
         this.ctx.font = "30px Arial";
         this.ctx.fillText("Hello! Draw over me.", 350, 300);
       }
-      this.test_draw()
+      this.init_draw()
+
+      this.broadcast_draw = function(draw_data) {
+        NAF.connection.broadcastData('canvas_draw', draw_data)
+      }
   
       el.addEventListener('mousedown', function (evt) {
         data.drawing = true;
@@ -86,11 +101,15 @@ AFRAME.registerComponent('chalkboard', {
       this.el.addEventListener('raycaster-intersected-cleared', evt => {
         this.raycaster = null;
       });
+
+      this.el.addEventListener('canvas_draw', function (event) {
+        event.srcElement.components.chalkboard.draw([event.detail]);
+        event.srcElement.components.chalkboard.broadcast_draw([event.detail]);
+      });
     },
 
     tick: function () {      
         if (!this.raycaster) { return; }  // Not intersecting.
-    
         let intersection = this.raycaster.components.raycaster.getIntersection(this.el);
         if (!intersection) { return; }
         if (this.data.drawing) {
@@ -105,7 +124,7 @@ AFRAME.registerComponent('chalkboard', {
             // local_circle.setAttribute('position', {x: x, y: y, z: 1.7});
             // document.getElementById('stage').appendChild(local_circle);
             // Local paint - canvas
-            this.draw(x,y);
+            this.store_draw(x,y);
             // Networked send
             // network_circle = document.createElement('a-entity');
             // network_circle.setAttribute('networked', 'template:#paint-template;');
