@@ -53,13 +53,13 @@ AFRAME.registerComponent('chalkboard', {
           draw_y = Math.abs(y - (position_y + height)) * this.data.canvas_size[1]/(position_y + height);
         }
         if (y < 0) {
-          draw_y = Math.abs(y - (position_y - height)) * this.data.canvas_size[1]/(position_y + height);
+          draw_y = Math.abs(y + (position_y + height)) * this.data.canvas_size[1]/((position_y + height));
         }
         if (x > 0) {
-          draw_x = (x + (position_x + (width/2))) * (this.data.canvas_size[0]/((Math.abs(position_x) + (width/2))*2));
+          draw_x = (x + (position_x + (width/2))) * (this.data.canvas_size[0]/((position_x + (width/2))*2));
         }
         if (x < 0) {
-          draw_x = Math.abs(x + (position_x + (width/2))) * (this.data.canvas_size[0]/((Math.abs(position_x) + (width/2))*2));
+          draw_x = Math.abs(x + (position_x + (width/2))) * (this.data.canvas_size[0]/((position_x + (width/2))*2));
         }
         this.data.canvas_interaction.push(
           {'x': draw_x, 'y': draw_y, 'stroke': {'color': 'black'}}
@@ -140,7 +140,7 @@ AFRAME.registerComponent('chalkboard', {
             // document.getElementById('leftHand').components.haptics.pulse();
             const { x, y ,z } = intersection.point;
             // Object { x: -3.3931509824845336, y: 6.604323059793826, z: -8.25 }
-            console.log("This is the intersection", intersection.point);
+            // console.log("This is the intersection", intersection.point);
             this.store_draw(x,y);
         }
       }
