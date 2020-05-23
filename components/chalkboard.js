@@ -6,10 +6,16 @@
 AFRAME.registerComponent('chalkboard', {
     schema: {
         drawing: {type: 'boolean', default: false},
-        canvas_interaction: {type: 'array', default: []}
+        canvas_interaction: {type: 'array', default: []},
+        canvas_size: {type: 'array', default: [1024, 512]}
     },
     init: function () {
       var el = this.el;
+      console.log(el)
+      console.log("Height:", this.el.components.geometry.data.height)
+      console.log("Height:", this.el.components.geometry.data.width)
+      console.log("Position X: ", this.el.components.position.data.x)
+      console.log("Position Y: ", this.el.components.position.data.y)
       var material = el.getAttribute('material');
       var initialColor = material.color;
       var self = this;
@@ -37,12 +43,23 @@ AFRAME.registerComponent('chalkboard', {
         // if (x < 0) {
         //   draw_x = Math.abs(x + 10) * 51.2
         // }
-        draw_y = Math.abs(y - 10) * 51.2
+        // 3.637 + 5.5
+        var height = this.el.components.geometry.data.height;
+        var width = this.el.components.geometry.data.width;
+        var position_x = (this.el.components.position.data.x/2);
+        var position_y = (this.el.components.position.data.y/2);
+  
+        if (y > 0) {
+          draw_y = Math.abs(y - (position_y + height)) * this.data.canvas_size[1]/(position_y + height);
+        }
+        if (y < 0) {
+          draw_y = Math.abs(y - (position_y - height)) * this.data.canvas_size[1]/(position_y + height);
+        }
         if (x > 0) {
-          draw_x = (x + 10) * 51.2
+          draw_x = (x + (position_x + (width/2))) * (this.data.canvas_size[0]/((Math.abs(position_x) + (width/2))*2));
         }
         if (x < 0) {
-          draw_x = Math.abs(x + 5.8) * 51.2
+          draw_x = Math.abs(x + (position_x + (width/2))) * (this.data.canvas_size[0]/((Math.abs(position_x) + (width/2))*2));
         }
         this.data.canvas_interaction.push(
           {'x': draw_x, 'y': draw_y, 'stroke': {'color': 'black'}}
