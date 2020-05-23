@@ -30,12 +30,19 @@ AFRAME.registerComponent('chalkboard', {
         // 0 to 10 = 512 to 1024
         // 10 to 0 = 0 to 512
   
+        // draw_y = Math.abs(y - 10) * 51.2
+        // if (x > 0) {
+        //   draw_x = (x + 10) * 51.2
+        // }
+        // if (x < 0) {
+        //   draw_x = Math.abs(x + 10) * 51.2
+        // }
         draw_y = Math.abs(y - 10) * 51.2
         if (x > 0) {
           draw_x = (x + 10) * 51.2
         }
         if (x < 0) {
-          draw_x = Math.abs(x + 10) * 51.2
+          draw_x = Math.abs(x + 5.8) * 51.2
         }
         this.data.canvas_interaction.push(
           {'x': draw_x, 'y': draw_y, 'stroke': {'color': 'black'}}
@@ -63,10 +70,10 @@ AFRAME.registerComponent('chalkboard', {
       this.init_draw = function(x,y) {
         this.ctx.beginPath();
         this.ctx.rect(0, 0, 1024, 512);
-        this.ctx.fillStyle = "white";
+        this.ctx.fillStyle = "#002200";
         this.ctx.fill();
-        this.ctx.fillStyle = "black";
-        this.ctx.font = "30px Arial";
+        this.ctx.fillStyle = "white";
+        this.ctx.font = "24px Arial";
         this.ctx.fillText("Hello! Draw over me.", 350, 300);
       }
       this.init_draw()
@@ -116,6 +123,7 @@ AFRAME.registerComponent('chalkboard', {
             // document.getElementById('leftHand').components.haptics.pulse();
             const { x, y ,z } = intersection.point;
             // Object { x: -3.3931509824845336, y: 6.604323059793826, z: -8.25 }
+            console.log("This is the intersection", intersection.point);
             this.store_draw(x,y);
         }
       }

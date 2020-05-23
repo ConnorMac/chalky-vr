@@ -17,7 +17,8 @@
 
     <script src="https://unpkg.com/aframe-randomizer-components@^3.0.1/dist/aframe-randomizer-components.min.js"></script>
     <script src="https://unpkg.com/aframe-particle-system-component@1.0.5/dist/aframe-particle-system-component.min.js"></script>
-    <script src="components/spawn-in-circle.component.js"></script>
+    <script src="components/spawn-avatar.component.js"></script>
+    <script src="components/random-avatar.component.js"></script>
   </head>
   <body>
     <script>
@@ -72,8 +73,12 @@
       <img id="sky" src="https://i.imgur.com/WqlqEkq.jpg" crossorigin="anonymous" />
       <a-asset-item id="robo_char-obj" src="./assets/robo_char.obj"></a-asset-item>
       <a-asset-item id="robo_char-mtl" src="./assets/robo_char.mtl"></a-asset-item>
-      <a-asset-item id="robo_hand-obj" src="./assets/robo_hand.obj"></a-asset-item>
-      <a-asset-item id="robo_hand-mtl" src="./assets/robo_hand.mtl"></a-asset-item>
+      <a-asset-item id="robo_char-obj" src="./assets/robo_char.obj"></a-asset-item>
+      <a-asset-item id="robo_char-mtl" src="./assets/robo_char.mtl"></a-asset-item>
+      <a-asset-item id="tako_char-obj" src="./assets/tako_char.obj"></a-asset-item>
+      <a-asset-item id="tako_char-mtl" src="./assets/tako_char.mtl"></a-asset-item>
+      <a-asset-item id="chalkboard-obj" src="./assets/chalkboard.obj"></a-asset-item>
+      <a-asset-item id="chalkboard-mtl" src="./assets/chalkboard.mtl"></a-asset-item>
 
       <!-- Templates -->
 
@@ -85,7 +90,8 @@
       <!-- Head -->
       <template id="head-template">
         <a-entity class="avatar">
-          <a-entity scale="1.2 1.2 1.2" rotation="0 180 0" position="0.7 -1.2 -0.7" obj-model="obj: #robo_char-obj; mtl: #robo_char-mtl" modify-materials></a-entity>
+          <a-entity class="head" scale="0.7 0.7 0.7" rotation="0 180 0" position="0.7 -1.8 -0.7" obj-model="obj: #tako_char-obj; mtl: #tako_char-mtl" modify-materials></a-entity>
+          <!-- <a-entity scale="1.2 1.2 1.2" rotation="0 180 0" position="0.7 -1.2 -0.7" obj-model="obj: #robo_char-obj; mtl: #robo_char-mtl" modify-materials></a-entity> -->
         </a-entity>
       </template>
 
@@ -104,10 +110,10 @@
     </a-assets>
 
       <!-- Player object-->
-      <a-entity id="player" networked="template:#player-template;attachTemplateToLocal:false;" spawn-in-circle="radius:3" teleporting>
+      <a-entity id="player" networked="template:#player-template;attachTemplateToLocal:false;" spawn-avatar="radius:3" teleporting>
         <a-entity id="testCamera" camera position="0 1.6 0" look-controls wasd-controls networked="template:#head-template;attachTemplateToLocal:false;">
-            <a-sphere id='head' class="head"
-              random-color
+            <a-sphere class="head"
+              random-avatar
               visible="false"
             ></a-sphere>
             <!-- <a-entity
@@ -154,7 +160,7 @@
         </template>
         <!-- Chalkboard -->
         <a-entity id="stage" stage>
-          <a-entity 
+          <!-- <a-entity 
             id="chalkboard"
             geometry="primitive: plane; height: 10; width: 20"
             material="shader: flat; src: #chalkboard-canvas"
@@ -162,7 +168,17 @@
             chalkboard
             canvas-updater
           >
-        </a-entity>
+          </a-entity> -->
+          <a-entity 
+            id="chalkboard"
+            geometry="primitive: plane; height: 5.5; width: 12"
+            material="shader: flat; src: #chalkboard-canvas"
+            position="-0.112 3.637 1.55"
+            chalkboard
+            canvas-updater
+          >
+          </a-entity>
+          <a-entity position="3 1.2 1.5" rotation="0 90 0" obj-model="obj: #chalkboard-obj; mtl: #chalkboard-mtl" modify-materials></a-entity>
         </a-entity>
 
         <!-- Environment -->
@@ -187,9 +203,22 @@
         components: [
           'position',
           'rotation',
+          'scale',
           {
             selector: '.head',
             component: 'material'
+          },
+          {
+            selector: '.head',
+            component: 'scale'
+          },
+          {
+            selector: '.head',
+            component: 'obj-model'
+          },
+          {
+            selector: '.head',
+            component: 'position'
           }
         ]
       });

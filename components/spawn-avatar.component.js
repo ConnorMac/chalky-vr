@@ -1,4 +1,4 @@
-AFRAME.registerComponent('spawn-in-circle', {
+AFRAME.registerComponent('spawn-avatar', {
   schema: {
     radius: {type: 'number', default: 1}
   },
