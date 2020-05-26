@@ -44,22 +44,26 @@ AFRAME.registerComponent('chalkboard', {
         //   draw_x = Math.abs(x + 10) * 51.2
         // }
         // 3.637 + 5.5
+
+        // y = 6.383709881649484
+        // pos_y = 1.8185
+        // height = 5.5
         var height = this.el.components.geometry.data.height;
         var width = this.el.components.geometry.data.width;
-        var position_x = (this.el.components.position.data.x/2);
-        var position_y = (this.el.components.position.data.y/2);
+        var position_x = this.el.components.position.data.x;
+        var position_y = this.el.components.position.data.y;
   
         if (y > 0) {
-          draw_y = Math.abs(y - (position_y + height)) * this.data.canvas_size[1]/(position_y + height);
+          draw_y = Math.abs(y - (Math.abs(position_y)/4 + height)) * (this.data.canvas_size[1]/height);
         }
         if (y < 0) {
-          draw_y = Math.abs(y + (position_y + height)) * this.data.canvas_size[1]/((position_y + height));
+          draw_y = Math.abs(y + (Math.abs(position_y)/4 + height)) * (this.data.canvas_size[1]/height);
         }
         if (x > 0) {
-          draw_x = (x + (position_x + (width/2))) * (this.data.canvas_size[0]/((position_x + (width/2))*2));
+          draw_x = (x + (Math.abs(position_x) + width)/2) * (this.data.canvas_size[0]/(Math.abs(position_x) + width));
         }
         if (x < 0) {
-          draw_x = Math.abs(x + (position_x + (width/2))) * (this.data.canvas_size[0]/((position_x + (width/2))*2));
+          draw_x = Math.abs(x + (Math.abs(position_x) + width)/2) * (this.data.canvas_size[0]/(Math.abs(position_x) + width));
         }
         this.data.canvas_interaction.push(
           {'x': draw_x, 'y': draw_y, 'stroke': {'color': 'black'}}
