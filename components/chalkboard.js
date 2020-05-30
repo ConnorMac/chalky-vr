@@ -27,44 +27,11 @@ AFRAME.registerComponent('chalkboard', {
       NAF.connection.subscribeToDataChannel('canvas_draw', (event, type, data) => {if(data) {this.networked_draw(data);}})
 
       this.store_draw = function(x,y) {
-        // y - 0 to 10
-        // x - -10 to 10
-        // Canvas 0 to 512
-        // Canvas 0 to 1024
+        draw_x = this.data.canvas_size[0] * x
+        draw_y = this.data.canvas_size[1] * (1 - y)
 
-        // -10 to 0 = 0 to 512 X
-        // 0 to 10 = 512 to 1024
-        // 10 to 0 = 0 to 512
-  
-        // draw_y = Math.abs(y - 10) * 51.2
-        // if (x > 0) {
-        //   draw_x = (x + 10) * 51.2
-        // }
-        // if (x < 0) {
-        //   draw_x = Math.abs(x + 10) * 51.2
-        // }
-        // 3.637 + 5.5
-
-        // y = 6.383709881649484
-        // pos_y = 1.8185
-        // height = 5.5
-        var height = this.el.components.geometry.data.height;
-        var width = this.el.components.geometry.data.width;
-        var position_x = this.el.components.position.data.x;
-        var position_y = this.el.components.position.data.y;
-  
-        if (y > 0) {
-          draw_y = Math.abs(y - (Math.abs(position_y)/4 + height)) * (this.data.canvas_size[1]/height);
-        }
-        if (y < 0) {
-          draw_y = Math.abs(y + (Math.abs(position_y)/4 + height)) * (this.data.canvas_size[1]/height);
-        }
-        if (x > 0) {
-          draw_x = (x + (Math.abs(position_x) + width)/2) * (this.data.canvas_size[0]/(Math.abs(position_x) + width));
-        }
-        if (x < 0) {
-          draw_x = Math.abs(x + (Math.abs(position_x) + width)/2) * (this.data.canvas_size[0]/(Math.abs(position_x) + width));
-        }
+        console.log(draw_x)
+        console.log(draw_y)
         this.data.canvas_interaction.push(
           {'x': draw_x, 'y': draw_y, 'stroke': {'color': 'black'}}
         )
@@ -82,7 +49,7 @@ AFRAME.registerComponent('chalkboard', {
         draw_array.forEach(
           element => {
             this.ctx.beginPath();
-            this.ctx.arc(element.x, element.y, 7, 0, 2 * Math.PI);
+            this.ctx.arc(element.x, element.y, 4, 0, 2 * Math.PI);
             this.ctx.fill();
           }
         );
@@ -142,9 +109,8 @@ AFRAME.registerComponent('chalkboard', {
         if (!intersection) { return; }
         if (this.data.drawing) {
             // document.getElementById('leftHand').components.haptics.pulse();
-            const { x, y ,z } = intersection.point;
-            // Object { x: -3.3931509824845336, y: 6.604323059793826, z: -8.25 }
-            // console.log("This is the intersection", intersection.point);
+            const { x,y } = intersection.uv;
+            console.log(intersection)
             this.store_draw(x,y);
         }
       }

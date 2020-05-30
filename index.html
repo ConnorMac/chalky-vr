@@ -111,7 +111,7 @@
 
       <!-- Player object-->
       <a-entity id="player" networked="template:#player-template;attachTemplateToLocal:false;" spawn-avatar="radius:3" teleporting>
-        <a-entity id="testCamera" camera position="0 1.6 0" look-controls wasd-controls networked="template:#head-template;attachTemplateToLocal:false;">
+        <a-entity id="testCamera" camera position="0 2.6 0" look-controls wasd-controls="acceleration:300" networked="template:#head-template;attachTemplateToLocal:false;">
             <a-sphere class="head"
               random-avatar
               visible="false"

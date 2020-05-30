@@ -13,10 +13,10 @@ AFRAME.registerComponent('spawn-avatar', {
     el.setAttribute('position', worldPoint);
     // console.log('world point', worldPoint);
 
-    var angleDeg = angleRad * 180 / Math.PI;
-    var angleToCenter = -1 * angleDeg + 90;
-    var angleRad = THREE.Math.degToRad(angleToCenter);
-    el.object3D.rotation.set(0, angleRad, 0);
+    // var angleDeg = angleRad * 180 / Math.PI;
+    // var angleToCenter = -1 * angleDeg + 90;
+    // var angleRad = THREE.Math.degToRad(angleToCenter);
+    // el.object3D.rotation.set(0, angleRad, 0);
     // console.log('angle deg', angleDeg);
   },
 
