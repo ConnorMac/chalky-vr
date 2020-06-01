@@ -74,9 +74,9 @@ AFRAME.registerComponent('chalkboard', {
         this.ctx.rect(0, 0, 1024, 512);
         this.ctx.fillStyle = "#002200";
         this.ctx.fill();
-        this.ctx.fillStyle = "white";
-        this.ctx.font = "24px Arial";
-        this.ctx.fillText("Hello! Draw over me.", 350, 300);
+        // this.ctx.fillStyle = "white";
+        // this.ctx.font = "24px Arial";
+        // this.ctx.fillText("Hello! Draw over me.", 350, 300);
       }
       this.init_draw()
 
