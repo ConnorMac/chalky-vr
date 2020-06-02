@@ -8,6 +8,7 @@ AFRAME.registerComponent('chalkboard', {
         drawing: {type: 'boolean', default: false},
         canvas_interaction: {type: 'array', default: []},
         canvas_size: {type: 'array', default: [1024, 512]},
+        stroke: {default: {}}
     },
     init: function () {
       var el = this.el;
@@ -94,11 +95,6 @@ AFRAME.registerComponent('chalkboard', {
         data.drawing = false;
         data.previous_stroke_obj = {}
       });
-
-      el.addEventListener('mousemove', function (evt) {
-        // el.setAttribute('material', 'color', self.isMouseEnter ? '#24CAFF' : initialColor);
-        console.log('moving the mouse!')
-      });
   
       el.addEventListener('mouseenter', function () {
         // el.setAttribute('material', 'color', '#24CAFF');
@@ -123,18 +119,14 @@ AFRAME.registerComponent('chalkboard', {
       });
     },
 
-    tick: function () {      
+    tick: function () {  
+        var data = this.data;    
         if (!this.raycaster) { return; }
         let intersection = this.raycaster.components.raycaster.getIntersection(this.el);
         if (!intersection) { return; }
         if (this.data.drawing) {
             const { x,y } = intersection.uv;
-            stroke_obj = {
-              'color': 'white',
-              'size': 7,
-              'style': 'round',
-              'type': 'freehand'
-            }
+            stroke_obj = data.stroke
             this.store_draw(x, y, stroke_obj);
         }
       }

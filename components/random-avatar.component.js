@@ -6,7 +6,6 @@ AFRAME.registerComponent('random-avatar', {
     },
 
     getRandomAvatar: function() {
-        console.log('getting random avatar')
         const avatars = [
             {
                 'name': 'robo',
