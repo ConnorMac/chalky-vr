@@ -5,11 +5,13 @@
     <title>ChalkyVR</title>
     <meta name="description" content="ChalkyVR" />
     <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.0/dist/aframe-extras.min.js"></script>
     <script src="components/chalkboard.js"></script>
     <script src="components/player.js"></script>
     <script src="components/canvas-updater.js"></script>
-    <script src="https://unpkg.com/aframe-teleport-controls@0.2.x/dist/aframe-teleport-controls.min.js"></script>
+    <script src="https://rawgit.com/fernandojsg/aframe-teleport-controls/master/dist/aframe-teleport-controls.min.js"></script>
     <script src="https://unpkg.com/aframe-haptics-component/dist/aframe-haptics-component.min.js"></script>
+    <script src="https://unpkg.com/super-hands@3.0.0/dist/super-hands.min.js"></script>
 
     <!-- Networking -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.slim.js"></script>
@@ -24,6 +26,7 @@
     <script src="https://unpkg.com/aframe-randomizer-components@^3.0.1/dist/aframe-randomizer-components.min.js"></script>
     <script src="https://unpkg.com/aframe-particle-system-component@1.0.5/dist/aframe-particle-system-component.min.js"></script>
     <script src="https://unpkg.com/aframe-state-component@6.7.0/dist/aframe-state-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-motion-capture-components/dist/aframe-motion-capture-components.min.js"></script>
     <script src="components/spawn-avatar.component.js"></script>
     <script src="components/random-avatar.component.js"></script>
   </head>
@@ -46,14 +49,28 @@
         },
       });
 
-      AFRAME.registerComponent("teleporting", {
-        init: function () {
-          var el = this.el;
-          el.addEventListener("teleported", function (evt) {
-            console.log("teleport: ", evt);
-          });
-        },
-      });
+      AFRAME.registerComponent('chalkboard-collision', {
+        init: function() {
+          console.log("INITING")
+          this.el.addEventListener('hit', (e) => {
+            console.log(e)
+          })
+          this.el.addEventListener('hitend', (e) => {
+            console.log('hitend')
+              console.log(e)
+          })
+        }
+      })
+
+      // AFRAME.registerComponent("teleporting", {
+      //   init: function () {
+      //     console.log("Player spawned");
+      //     var el = this.el;
+      //     window.addEventListener("teleported", function (evt) {
+      //       console.log("teleport: ", evt);
+      //     });
+      //   },
+      // });
 
       AFRAME.registerComponent("draw-canvas", {
         schema: { default: "" },
@@ -90,6 +107,8 @@
     room: handcontrollers;
     debug: true;
   "
+      physics
+      avatar-recorder
     >
       <a-assets>
         <img
@@ -142,6 +161,10 @@
           <a-entity></a-entity>
         </template>
 
+        <template id="pen">
+          <a-box color="blue" scale="0.5 0.5 0.5"></a-box>
+        </template>
+
         <!-- Head -->
         <template id="head-template">
           <a-entity class="avatar">
@@ -159,7 +182,7 @@
 
         <!-- Hand -->
         <template id="hand-template">
-          <a-entity>
+          <a-entity scale="0.7 0.7 0.7">
             <a-box
               rotation="90 0 0"
               scale="0.15 0.3 0.15"
@@ -227,6 +250,7 @@
             position="-0.112 3.622 1.55"
             bind__chalkboard="stroke: stroke"
             canvas-updater
+            chalkboard-collision
           >
           </a-entity>
           <a-entity
@@ -264,7 +288,6 @@
         id="player"
         networked="template:#player-template;attachTemplateToLocal:false;"
         spawn-avatar="radius:3"
-        teleporting
         player
       >
         <a-entity
@@ -287,19 +310,47 @@
 
         <a-entity
           id="leftHand"
+          networked="template:#hand-template;"
           laser-controls="hand: left;"
+          hand-controls
           haptics
           raycaster="objects: #chalkboard"
-          networked="template:#hand-template;"
+          super-hands
         ></a-entity>
         <a-entity
           id="rightHand"
-          line="color: #118A7E"
           networked="template:#hand-template;"
-          teleport-controls="type: parabolic; cameraRig: #player; teleportOrigin: #player"
+          teleport-controls="type: parabolic; cameraRig: #player; teleportOrigin: #player; curveShootingSpeed: 10; maxLength: 30;"
           vive-controls="hand: right"
+          hand-controls
+          super-hands
         ></a-entity>
       </a-entity>
+
+      <!-- Other objects -->
+      <a-box
+        hoverable
+        grabbable
+        stretchable
+        draggable
+        dropppable
+        position="0 1 1"
+        onclick="console.log(`Clicked on the blue box`)"
+        color="blue"
+        scale="0.5 0.5 0.5"
+      ></a-box>
+
+      <!-- <a-entity
+        hoverable
+        grabbable
+        stretchable
+        draggable
+        dropppable
+        position="0 1 1"
+        onclick="console.log(`Clicked on the blue box`)"
+        networked="template:#pen;attachTemplateToLocal:true;persistent:true;"
+      >
+      </a-entity> -->
       
     </a-scene>
 
@@ -341,14 +392,11 @@
       });
 
       NAF.schemas.add({
-        template: "#paint-template",
+        template: "#pen",
         components: [
           "position",
           "rotation",
-          {
-            selector: ".paint-circle",
-            component: "material",
-          },
+          "scale"
         ],
       });
 
